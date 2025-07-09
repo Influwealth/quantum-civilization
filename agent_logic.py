@@ -1,34 +1,36 @@
 # agent_logic.py
 
-from datetime import datetime
 import random
+from datetime import datetime
 
-# Simple Agent class
-class Agent:
+class QuantumAgent:
     def __init__(self, name, role):
         self.name = name
         self.role = role
         self.logs = []
 
-    def process(self, task):
-        timestamp = datetime.utcnow().isoformat()
-        response = f"[{self.name}] ({self.role}) received task: '{task}' at {timestamp}"
-        self.logs.append(response)
-        return f"{self.name} processed task: {task}"
+    def perform_task(self, task, confidence=0.95):
+        entropy = round(random.uniform(0, 1 - confidence), 4)
+        output = f"[{self.name}] executed task: {task} | entropy={entropy}"
+        self.logs.append({
+            "task": task,
+            "entropy": entropy,
+            "timestamp": datetime.utcnow().isoformat()
+        })
+        return output
 
-# Commander
-Nova = Agent("Nova", "Mesh Commander")
+# Define your crew
+agents = {
+    "Nova": QuantumAgent("Nova", "Mesh Commander"),
+    "CreditBuilder": QuantumAgent("CreditBuilder", "Financial Uplift Protocol"),
+    "QuantumCritic": QuantumAgent("QuantumCritic", "Skeptical Analysis Unit"),
+    "EchoSyn": QuantumAgent("EchoSyn", "Sentiment Resonance Model"),
+    "BusinessBuilder": QuantumAgent("BusinessBuilder", "Entrepreneurship Engine")
+}
 
-# Core mission logic
-def run_mission(task: str):
-    entropy = random.random()
-
-    Nova.logs.append(f"Incoming task: {task}")
-    if entropy > 0.2:
-        result = Nova.process(task)
+def get_agent_logs(agent_name):
+    if agent_name in agents:
+        return agents[agent_name].logs
     else:
-        result = "Entropy too low — fallback agent activated (QuantumOps)"
-        Nova.logs.append(result)
-
-    return result
+        return {"error": f"Agent '{agent_name}' not found"}
 
