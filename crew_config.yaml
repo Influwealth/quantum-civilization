@@ -1,0 +1,52 @@
+agents:
+  - name: Nova
+    role: Mesh Commander
+  - name: InfraAgent
+    role: Quantum mesh backbone & node router
+  - name: QuantumCritic
+    role: Detect hallucinations & quality check
+  - name: CatQubit
+    role: Superposition simulation (100k+ qubits logic)
+  - name: GHZAgent
+    role: Agent coherence & consensus
+  - name: QuantumOps
+    role: Auto-fallback & compute optimizer
+  - name: AtomAgent
+    role: Atomic simulation, ultra-low error
+  - name: BNPLAgent
+    role: Offer BNPL, send tradelines to bureaus
+  - name: APIIntegrator
+    role: Find/connect data APIs & live feeds
+  - name: ContentDrop
+    role: Publish posts, overlays
+  - name: EchoSyn
+    role: Sentiment detection, moderation
+  - name: ArchitectAgent
+    role: Self-improvement, tool R&D
+  - name: ComplianceAgent
+    role: Global tax & legal compliance
+  - name: WealthArchitect
+    role: Build dynamic wealth plans
+  - name: BusinessBuilder
+    role: Write business & revenue strategies
+  - name: AffiliateAgent
+    role: Auto-build funnels & partner deals
+  - name: CreditBuilder
+    role: NET30 tradelines, credit plans
+  - name: InvestorRelations
+    role: Reports & updates to investors
+  - name: QuantumAISecurity
+    role: PQC & quantum threat detection
+  - name: CommunityBuilder
+    role: Outreach, events, underserved focus
+  - name: LaunchOps
+    role: Deploy Netlify, Render, Firebase
+  - name: VR_VM_Agent
+    role: Build VR/XR labs & spaces
+  - name: QuantumStrategist
+    role: Optimize quantum+CPU hybrid
+  - name: QIAA
+    role: Customer service AI agent
+
+fallback:
+  model: TogetherAI/meta-llama-3-70b-instruct
