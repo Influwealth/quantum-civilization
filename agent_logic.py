@@ -1,24 +1,34 @@
-# mission_router.py
-from fastapi import FastAPI
-from agent_logic import run_mission, Nova
+# agent_logic.py
 
-app = FastAPI()
+from datetime import datetime
+import random
 
-@app.get("/healthz")
-def health_check():
-    return {
-        "status": "DeepSight Quantum Mesh Online",
-        "commander": Nova.name
-    }
+# Simple Agent class
+class Agent:
+    def __init__(self, name, role):
+        self.name = name
+        self.role = role
+        self.logs = []
 
-@app.post("/send-mission")
-def send_mission(task: str):
-    results = run_mission(task)
-    return {
-        "mission": task,
-        "results": results
-    }
+    def process(self, task):
+        timestamp = datetime.utcnow().isoformat()
+        response = f"[{self.name}] ({self.role}) received task: '{task}' at {timestamp}"
+        self.logs.append(response)
+        return f"{self.name} processed task: {task}"
 
-@app.get("/logs")
-def get_logs():
-    return Nova.logs  # Optional: extend to all agent logs later
+# Commander
+Nova = Agent("Nova", "Mesh Commander")
+
+# Core mission logic
+def run_mission(task: str):
+    entropy = random.random()
+
+    Nova.logs.append(f"Incoming task: {task}")
+    if entropy > 0.2:
+        result = Nova.process(task)
+    else:
+        result = "Entropy too low — fallback agent activated (QuantumOps)"
+        Nova.logs.append(result)
+
+    return result
+
