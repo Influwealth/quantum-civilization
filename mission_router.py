@@ -1,24 +1,41 @@
 # mission_router.py
+
 from fastapi import FastAPI
-from agent_logic import run_mission, Nova
+from pydantic import BaseModel
+from agent_logic import agents, get_agent_logs
 
 app = FastAPI()
+
+
+# Define input structure for POST
+class Mission(BaseModel):
+    task: str
+    agent_name: str = "Nova"  # default to Nova if not specified
+
 
 @app.get("/healthz")
 def health_check():
     return {
         "status": "DeepSight Quantum Mesh Online",
-        "commander": Nova.name
+        "crew": list(agents.keys())
     }
+
 
 @app.post("/send-mission")
-def send_mission(task: str):
-    results = run_mission(task)
+def send_mission(mission: Mission):
+    agent = agents.get(mission.agent_name)
+    if not agent:
+        return {"error": f"Agent '{mission.agent_name}' not found."}
+    
+    result = agent.perform_task(mission.task)
     return {
-        "mission": task,
-        "results": results
+        "mission": mission.task,
+        "agent": mission.agent_name,
+        "result": result
     }
 
-@app.get("/logs")
-def get_logs():
-    return Nova.logs  # Can be expanded to all agents later
+
+@app.get("/logs/{agent_name}")
+def get_logs(agent_name: str):
+    return get_agent_logs(agent_name)
+
