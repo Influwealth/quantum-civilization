@@ -1,6 +1,4 @@
 # render.yaml
 
-preinstall:
-  - pip install "cython<3.0"
-  - pip install --upgrade setuptools wheel pip
-  - pip install --no-build-isolation "pyyaml==6.0.1"
+build:
+  dockerfilePath: ./Dockerfile
