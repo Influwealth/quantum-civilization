@@ -1,0 +1,5 @@
+# render.yaml
+preinstall:
+  - pip install cython
+  - pip install setuptools wheel
+  - pip install --upgrade pip
