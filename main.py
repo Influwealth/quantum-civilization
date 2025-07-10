@@ -41,5 +41,6 @@ async def sync_overlay():
         ],
         "output": "Firebase HUD injection + OBS layout prep initialized"
     }
+# 🧠 Nova sync route confirmed — forcing rebuild
 
 
