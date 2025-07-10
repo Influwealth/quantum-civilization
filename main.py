@@ -1,19 +1,25 @@
 from fastapi import FastAPI
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+# 🔐 Initialize Firebase
+cred = credentials.Certificate("firebase_creds.json")
+firebase_admin.initialize_app(cred)
+db = firestore.client()
 
 app = FastAPI()
-
 
 # ✅ Health check — confirms cockpit status
 @app.get("/healthz")
 def health_check():
     return {"status": "OK"}
 
-
-# 📡 Overlay output — Firebase stream HUD
+# 📡 Overlay output — writes to Firestore HUD
 @app.get("/overlay/latest/text")
 def overlay_text():
-    return {"text": "DeepSight cockpit live"}
-
+    hud_text = "DeepSight cockpit live"
+    db.collection("overlay").document("latest").set({"text": hud_text})
+    return {"text": hud_text}
 
 # 🧠 InfraAgent — Diagnose build & routing issues
 @app.post("/agents/infraagent/diagnose")
@@ -28,7 +34,6 @@ async def diagnose_build():
         ]
     }
 
-
 # 🧠 Nova — Sync overlay & HUD visuals
 @app.post("/agents/nova/sync-overlay")
 async def sync_overlay():
@@ -41,6 +46,8 @@ async def sync_overlay():
         ],
         "output": "Firebase HUD injection + OBS layout prep initialized"
     }
+
 # 🧠 Nova sync route confirmed — forcing rebuild
+
 
 
