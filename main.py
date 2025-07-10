@@ -2,10 +2,14 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+
+# ✅ Health check — confirms cockpit is running
 @app.get("/healthz")
 def health_check():
     return {"status": "OK"}
 
+
+# 📡 Overlay output — Firebase & stream HUD
 @app.get("/overlay/latest/text")
 def overlay_text():
     return {"text": "DeepSight cockpit live"}
@@ -24,3 +28,4 @@ async def diagnose_build():
         ]
     }
 }
+
