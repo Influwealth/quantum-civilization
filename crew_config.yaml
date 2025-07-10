@@ -1,3 +1,11 @@
+Nova:
+  role: "Overlay coordinator"
+  triggers:
+    - on: "overlay/init"
+      endpoint: "/agents/nova/sync-overlay"
+    - on: "studio/boot"
+      endpoint: "/agents/nova/sync-overlay"
+
 agents:
   - name: Nova
     role: Mesh Commander
