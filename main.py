@@ -3,19 +3,19 @@ from fastapi import FastAPI
 app = FastAPI()
 
 
-# ✅ Health check — confirms cockpit is running
+# ✅ Health check — confirms cockpit status
 @app.get("/healthz")
 def health_check():
     return {"status": "OK"}
 
 
-# 📡 Overlay output — Firebase & stream HUD
+# 📡 Overlay output — Firebase stream HUD
 @app.get("/overlay/latest/text")
 def overlay_text():
     return {"text": "DeepSight cockpit live"}
 
 
-# 🧠 InfraAgent Endpoint — Diagnose Build / Routing
+# 🧠 InfraAgent — Diagnose build & routing issues
 @app.post("/agents/infraagent/diagnose")
 async def diagnose_build():
     return {
@@ -26,6 +26,20 @@ async def diagnose_build():
             "Validate port exposure",
             "Trigger redeploy"
         ]
+    }
+
+
+# 🧠 Nova — Sync overlay & HUD visuals
+@app.post("/agents/nova/sync-overlay")
+async def sync_overlay():
+    return {
+        "status": "Overlay sync triggered",
+        "routes": [
+            "/overlay/latest/text",
+            "/healthz",
+            "/agents/infraagent/diagnose"
+        ],
+        "output": "Firebase HUD injection + OBS layout prep initialized"
     }
 
 
