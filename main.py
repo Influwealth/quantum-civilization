@@ -27,5 +27,5 @@ async def diagnose_build():
             "Trigger redeploy"
         ]
     }
-}
+
 
