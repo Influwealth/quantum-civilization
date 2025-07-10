@@ -4,3 +4,7 @@ services:
     ports:
       - port: 8000
         protocol: http
+        expose: true
+        public: true
+    domains:
+      - name: quantum-civilization.northflank.app
