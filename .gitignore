@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+.env
+.venv
+.DS_Store
+.idea/
+.vscode/
+*.log
+firebase_creds.json
+firebase_creds.json
+firebase_creds.json

@@ -1,0 +1,10 @@
+services:
+  quantum-api:
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 8000
+    ports:
+      - port: 8000
+        protocol: http
+        expose: true
+        public: true
+    domains:
+      - name: quantum-civilization.northflank.app
