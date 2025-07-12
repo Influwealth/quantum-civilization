@@ -18,3 +18,8 @@ def patch_firestore(payload):
         "Content-Type": "application/json"
     }
     return requests.patch(url, headers=headers, json=payload)
+
+agents = ["Nova", "EchoSyn", "InfraAgent", "GeminiCLI"]
+
+def get_agent_logs():
+    return {agent: "Idle" for agent in agents}
