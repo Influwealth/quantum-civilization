@@ -1,27 +1,55 @@
 from fastapi import FastAPI
-import firebase_admin
-from firebase_admin import credentials, firestore
+import os
+import json
+import requests
+from google.oauth2 import service_account
+from google.auth.transport.requests import Request
 
-# 🔐 Initialize Firebase
-cred = credentials.Certificate("firebase_creds.json")
-firebase_admin.initialize_app(cred)
-db = firestore.client()
-
+# 🚀 FastAPI cockpit app
 app = FastAPI()
 
-# ✅ Health check — confirms cockpit status
+# ✅ Health check
 @app.get("/healthz")
 def health_check():
     return {"status": "OK"}
 
-# 📡 Overlay output — writes to Firestore HUD
+# 📡 HUD overlay sync via Firestore REST API
 @app.get("/overlay/latest/text")
 def overlay_text():
-    hud_text = "DeepSight cockpit live"
-    db.collection("overlay").document("latest").set({"text": hud_text})
-    return {"text": hud_text}
+    try:
+        # Load service account from environment
+        firebase_creds = json.loads(os.environ["FIREBASE_CREDS"])
 
-# 🧠 InfraAgent — Diagnose build & routing issues
+        # Generate access token
+        creds = service_account.Credentials.from_service_account_info(
+            firebase_creds,
+            scopes=["https://www.googleapis.com/auth/datastore"]
+        )
+        creds.refresh(Request())
+        access_token = creds.token
+
+        # REST API PATCH request to Firestore
+        url = f"https://firestore.googleapis.com/v1/projects/{firebase_creds['project_id']}/databases/(default)/documents/overlay/latest"
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "fields": {
+                "text": { "stringValue": "DeepSight cockpit live" }
+            }
+        }
+
+        response = requests.patch(url, json=payload, headers=headers)
+        if response.status_code in [200, 201]:
+            return { "text": "DeepSight cockpit live" }
+        else:
+            return { "error": f"Firestore failed: {response.text}" }
+
+    except Exception as e:
+        return { "error": f"Overlay sync failed: {str(e)}" }
+
+# 🧠 InfraAgent route
 @app.post("/agents/infraagent/diagnose")
 async def diagnose_build():
     return {
@@ -34,7 +62,7 @@ async def diagnose_build():
         ]
     }
 
-# 🧠 Nova — Sync overlay & HUD visuals
+# 🔁 Nova sync route
 @app.post("/agents/nova/sync-overlay")
 async def sync_overlay():
     return {
@@ -44,10 +72,11 @@ async def sync_overlay():
             "/healthz",
             "/agents/infraagent/diagnose"
         ],
-        "output": "Firebase HUD injection + OBS layout prep initialized"
+        "output": "REST HUD injection live"
     }
 
-# 🧠 Nova sync route confirmed — forcing rebuild
-
-
+# 🔥 Uvicorn boot
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8080)
 
