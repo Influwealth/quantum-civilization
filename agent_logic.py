@@ -1,57 +1,20 @@
-import random
-from datetime import datetime
+import os, json, requests
+from google.oauth2 import service_account
+from google.auth.transport.requests import Request
 
-import firebase_admin
-from firebase_admin import credentials, db
+def get_access_token():
+    creds = service_account.Credentials.from_service_account_info(
+        json.loads(os.environ["FIREBASE_CREDS"]),
+        scopes=["https://www.googleapis.com/auth/datastore"]
+    )
+    creds.refresh(Request())
+    return creds.token
 
-# 🔐 Initialize Firebase (edit URL below)
-cred = credentials.Certificate("firebase-service-account.json")
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://myappanalytics-a01b7-default-rtdb.firebaseio.com'  # 🔁 REPLACE with your Firebase DB URL
-})
-
-
-class QuantumAgent:
-    def __init__(self, name, role):
-        self.name = name
-        self.role = role
-        self.logs = []
-
-    def perform_task(self, task, confidence=0.95):
-        entropy = round(random.uniform(0, 1 - confidence), 4)
-        timestamp = datetime.utcnow().isoformat()
-        output = f"[{self.name}] executed task: {task} | entropy={entropy}"
-
-        self.logs.append({
-            "task": task,
-            "entropy": entropy,
-            "timestamp": timestamp
-        })
-
-        # 📡 Stream to Firebase overlay
-        try:
-            db.reference("/overlay/latest").update({ "text": output })
-        except Exception as e:
-            print("⚠️ Firebase overlay error:", e)
-
-        return output
-
-
-# 🧠 Define your agent crew
-agents = {
-    "Nova": QuantumAgent("Nova", "Mesh Commander"),
-    "CreditBuilder": QuantumAgent("CreditBuilder", "Financial Uplift Protocol"),
-    "QuantumCritic": QuantumAgent("QuantumCritic", "Skeptical Analysis Unit"),
-    "EchoSyn": QuantumAgent("EchoSyn", "Sentiment Resonance Model"),
-    "BusinessBuilder": QuantumAgent("BusinessBuilder", "Entrepreneurship Engine")
-}
-
-
-# 📜 Retrieve agent log history
-def get_agent_logs(agent_name):
-    if agent_name in agents:
-        return agents[agent_name].logs
-    else:
-        return {"error": f"Agent '{agent_name}' not found"}
-
-
+def patch_firestore(payload):
+    token = get_access_token()
+    url = "https://firestore.googleapis.com/v1/projects/myappanalytics-a01b7/databases/(default)/documents/overlay/latest"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    return requests.patch(url, headers=headers, json=payload)
