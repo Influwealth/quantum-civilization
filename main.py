@@ -1,5 +1,7 @@
 from fastapi import FastAPI
-from mission_router import router
 
 app = FastAPI()
-app.include_router(router)
+
+@app.get("/overlay/latest/text")
+async def get_overlay_text():
+    return { "text": "DeepSight cockpit live" }
